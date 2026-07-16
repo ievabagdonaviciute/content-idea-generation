@@ -1,0 +1,76 @@
+{
+  "_disclaimer": "Synthetic example data for local development and demonstration only. Not a real record of any TikTok account's posting history.",
+  "creator_profile": {
+    "username": "ieva.bagdonaviciute",
+    "display_name": "Ieva Bagdonavičiūtė",
+    "avatar_url": "https://example.com/avatars/ieva.jpg",
+    "bio": "Programinė įranga, AI ir inžinerijos gyvenimas. Lietuviškai apie technologijas.",
+    "follower_count": 18400
+  },
+  "videos": [
+    {
+      "external_video_id": "7301000000000000001",
+      "permalink": "https://www.tiktok.com/@ieva.bagdonaviciute/video/7301000000000000001",
+      "caption": "Ar dirbtinis intelektas turi suvokti save? Paaiškinu per 60 sekundžių, kodėl šis klausimas filosofams ir inžinieriams reiškia visiškai skirtingus dalykus.",
+      "posted_at": "2026-05-02T18:00:00Z",
+      "duration_seconds": 58,
+      "stats": {"views": 142000, "likes": 9800, "comments": 340, "shares": 210}
+    },
+    {
+      "external_video_id": "7301000000000000002",
+      "permalink": "https://www.tiktok.com/@ieva.bagdonaviciute/video/7301000000000000002",
+      "caption": "GRWM prieš paskaitą: papasakosiu, kodėl mečiau vieną inžinerijos programą dėl kitos ir ką iš to išmokau.",
+      "posted_at": "2026-05-06T07:30:00Z",
+      "duration_seconds": 92,
+      "stats": {"views": 76000, "likes": 5600, "comments": 410, "shares": 88}
+    },
+    {
+      "external_video_id": "7301000000000000003",
+      "permalink": "https://www.tiktok.com/@ieva.bagdonaviciute/video/7301000000000000003",
+      "caption": "Šios savaitės technologijų naujienos: nauja AI modelio versija, vienas startuolis uždarytas, ir kodėl tai visiškai nustebino analitikus.",
+      "posted_at": "2026-05-09T17:15:00Z",
+      "duration_seconds": 64,
+      "stats": {"views": 54000, "likes": 3100, "comments": 120, "shares": 95}
+    },
+    {
+      "external_video_id": "7301000000000000004",
+      "permalink": "https://www.tiktok.com/@ieva.bagdonaviciute/video/7301000000000000004",
+      "caption": "Ekrano įrašas: parodau, kaip per 3 žingsnius sukoreguoti promptą, kad AI modelis grąžintų būkštą struktūrą, o ne pasakojimą.",
+      "posted_at": "2026-05-12T12:00:00Z",
+      "duration_seconds": 71,
+      "stats": {"views": 61000, "likes": 4200, "comments": 96, "shares": 130}
+    },
+    {
+      "external_video_id": "7301000000000000005",
+      "permalink": "https://www.tiktok.com/@ieva.bagdonaviciute/video/7301000000000000005",
+      "caption": "Mitas prieš faktą: 'AI modeliai galvoja kaip žmonės'. Paaiškinu, kas iš tikrųjų vyksta po kaustais, be žargono.",
+      "posted_at": "2026-05-15T19:45:00Z",
+      "duration_seconds": 55,
+      "stats": {"views": 98000, "likes": 7300, "comments": 260, "shares": 175}
+    },
+    {
+      "external_video_id": "7301000000000000006",
+      "permalink": "https://www.tiktok.com/@ieva.bagdonaviciute/video/7301000000000000006",
+      "caption": "5 dalykai, kuriuos norėjau žinoti prieš pradėdama studijuoti programų inžineriją universitete.",
+      "posted_at": "2026-05-19T09:00:00Z",
+      "duration_seconds": 88,
+      "stats": {"views": 121000, "likes": 8900, "comments": 512, "shares": 260}
+    },
+    {
+      "external_video_id": "7301000000000000007",
+      "permalink": "https://www.tiktok.com/@ieva.bagdonaviciute/video/7301000000000000007",
+      "caption": "Atsakau į komentarą: 'ar reikia mokytis matematikos, jei nori dirbti su AI?' Trumpas ir sąžiningas atsakymas.",
+      "posted_at": "2026-05-22T16:20:00Z",
+      "duration_seconds": 47,
+      "stats": {"views": 39000, "likes": 2400, "comments": 88, "shares": 40}
+    },
+    {
+      "external_video_id": "7301000000000000008",
+      "permalink": "https://www.tiktok.com/@ieva.bagdonaviciute/video/7301000000000000008",
+      "caption": "Diena iš mano gyvenimo per praktiką: kodo apžvalgos, sugriuvęs diegimas ir kava, kurios jau trečią kartą šiandien šildausi.",
+      "posted_at": "2026-05-26T20:00:00Z",
+      "duration_seconds": 105,
+      "stats": {"views": 67000, "likes": 4800, "comments": 190, "shares": 60}
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kadro
+      POSTGRES_PASSWORD: kadro
+      POSTGRES_DB: kadro
+    ports:
+      - "5432:5432"
+    volumes:
+      - kadro_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kadro -d kadro"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  kadro_postgres_data:

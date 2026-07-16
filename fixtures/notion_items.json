@@ -1,0 +1,90 @@
+{
+  "_disclaimer": "Synthetic example data for local development and demonstration only. URLs are illustrative placeholders, not real TikTok videos.",
+  "items": [
+    {
+      "notion_page_id": "mock-page-001",
+      "title": "Puikus hookas apie AI etiką",
+      "tiktok_url": "https://www.tiktok.com/@techcreator.example/video/7290000000000000101",
+      "creator": "techcreator.example",
+      "topics": ["dirbtinis intelektas", "etika"],
+      "format_hint": null,
+      "note_why_saved": "Man patiko, kaip pirmą sekundę užduoda provokuojantį klausimą.",
+      "note_favorite_part": "Hook'as - pirmas sakinys iš karto sukelia nesutarimą komentaruose.",
+      "status": "New",
+      "mock_availability": "full_media"
+    },
+    {
+      "notion_page_id": "mock-page-002",
+      "title": "GRWM formatas inžinerijos studentei",
+      "tiktok_url": "https://www.tiktok.com/@studygrwm.example/video/7290000000000000102",
+      "creator": "studygrwm.example",
+      "topics": ["universitetas", "inžinerija"],
+      "format_hint": "grwm_story",
+      "note_why_saved": "Noriu išbandyti panašią laisvą GRWM struktūrą savo turinyje.",
+      "note_favorite_part": "Man patinka, kaip istorija pinasi su kasdieniais veiksmais.",
+      "status": "New",
+      "mock_availability": "full_media"
+    },
+    {
+      "notion_page_id": "mock-page-003",
+      "title": "Trumpas screen recording pavyzdys",
+      "tiktok_url": "https://www.tiktok.com/@devtips.example/video/7290000000000000103",
+      "creator": "devtips.example",
+      "topics": ["programavimas"],
+      "format_hint": "screen_recording_demo",
+      "note_why_saved": "Naudinga montavimo tempo idėja savo demo video.",
+      "note_favorite_part": null,
+      "status": "Processed",
+      "mock_availability": "transcript_only"
+    },
+    {
+      "notion_page_id": "mock-page-004",
+      "title": "Įdomus mitas-faktas apie duomenų bazes",
+      "tiktok_url": "https://www.tiktok.com/@databytes.example/video/7290000000000000104",
+      "creator": "databytes.example",
+      "topics": ["duomenų bazės"],
+      "format_hint": "myth_vs_fact",
+      "note_why_saved": "Struktūra patinka - mitas, tada faktas per 3 sakinius.",
+      "note_favorite_part": "Užbaiga be klišės 'follow for more'.",
+      "status": "Processed",
+      "mock_availability": "metadata_only"
+    },
+    {
+      "notion_page_id": "mock-page-005",
+      "title": "Video be pasiekiamų metaduomenų",
+      "tiktok_url": "https://vm.tiktok.com/mockshortlink005/",
+      "creator": null,
+      "topics": [],
+      "format_hint": null,
+      "note_why_saved": "Išsaugota greitai, dar neapžiūrėjau.",
+      "note_favorite_part": null,
+      "status": "New",
+      "mock_availability": "unavailable"
+    },
+    {
+      "notion_page_id": "mock-page-006",
+      "title": "Nepavykęs apdorojimas - pavyzdys",
+      "tiktok_url": "https://www.tiktok.com/@brokenlink.example/video/7290000000000000106",
+      "creator": "brokenlink.example",
+      "topics": ["testavimas"],
+      "format_hint": null,
+      "note_why_saved": "Skirta parodyti klaidos pranešimo elgseną.",
+      "note_favorite_part": null,
+      "status": "Failed",
+      "mock_availability": "unavailable",
+      "error_message": "Nepavyko pasiekti vaizdo įrašo metaduomenų po 3 bandymų."
+    },
+    {
+      "notion_page_id": "mock-page-007",
+      "title": "Naujienų formato pavyzdys",
+      "tiktok_url": "https://www.tiktok.com/@technewsdaily.example/video/7290000000000000107",
+      "creator": "technewsdaily.example",
+      "topics": ["technologijų naujienos"],
+      "format_hint": "tech_news_recap",
+      "note_why_saved": "Geras tempas - greitas perėjimas tarp 3 naujienų.",
+      "note_favorite_part": "Perėjimo efektas tarp temų.",
+      "status": "New",
+      "mock_availability": "full_media"
+    }
+  ]
+}
