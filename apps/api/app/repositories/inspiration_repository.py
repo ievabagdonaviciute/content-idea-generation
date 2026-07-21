@@ -4,6 +4,7 @@ import uuid
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.models.inspiration import InspirationItem
 
@@ -31,7 +32,11 @@ class InspirationRepository:
         return result.scalar_one_or_none()
 
     async def get_by_id(self, item_id: uuid.UUID) -> InspirationItem | None:
-        return await self._session.get(InspirationItem, item_id)
+        return await self._session.get(
+            InspirationItem,
+            item_id,
+            options=[selectinload(InspirationItem.content_analysis)],
+        )
 
     async def list_all(
         self, *, limit: int = 50, offset: int = 0
