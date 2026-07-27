@@ -20,6 +20,7 @@ from app.integrations.notion.provisioner import (
 )
 from app.integrations.notion.schema import (
     PROP_ADDED,
+    PROP_ALREADY_USED,
     PROP_CREATOR,
     PROP_FAVORITE_PART,
     PROP_FORMAT,
@@ -59,6 +60,7 @@ class NotionInspirationClient(Protocol):
         error_message: str | None = None,
         topics: list[str] | None = None,
         format_hint: str | None = None,
+        already_used: bool | None = None,
     ) -> None: ...
 
 
@@ -146,7 +148,15 @@ class NotionClient:
         error_message: str | None = None,
         topics: list[str] | None = None,
         format_hint: str | None = None,
+        already_used: bool | None = None,
     ) -> None:
+        # Ensures the database (and its property schema) exists before writing to a
+        # page inside it. update_row never needs the ID for the PATCH itself, but
+        # unlike query_new_rows it was otherwise never triggering schema
+        # provisioning, so a newly added property (e.g. already_used) would never
+        # get created on an existing database until some other call happened to run
+        # query_new_rows first.
+        await self._get_database_id()
         properties: dict[str, Any] = {PROP_STATUS: {"select": {"name": status}}}
         if processed_at is not None:
             properties[PROP_PROCESSED_AT] = {"date": {"start": processed_at.isoformat()}}
@@ -158,5 +168,7 @@ class NotionClient:
             properties[PROP_TOPIC] = {"multi_select": [{"name": t} for t in topics]}
         if format_hint:
             properties[PROP_FORMAT] = {"select": {"name": format_hint}}
+        if already_used is not None:
+            properties[PROP_ALREADY_USED] = {"checkbox": already_used}
         response = await self._client.patch(f"/pages/{page_id}", json={"properties": properties})
         response.raise_for_status()
