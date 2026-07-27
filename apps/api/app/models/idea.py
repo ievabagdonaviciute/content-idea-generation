@@ -57,6 +57,9 @@ class ContentIdea(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     script: Mapped[GeneratedScript | None] = relationship(
         back_populates="idea", uselist=False, cascade="all, delete-orphan"
     )
+    sourced_media: Mapped[IdeaSourcedMedia | None] = relationship(
+        back_populates="idea", uselist=False, cascade="all, delete-orphan"
+    )
 
 
 class IdeaSource(Base, UUIDPrimaryKeyMixin, TimestampMixin):
@@ -127,3 +130,21 @@ class GeneratedScript(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     output_language: Mapped[str] = mapped_column(String(8), default="lt")
 
     idea: Mapped[ContentIdea] = relationship(back_populates="script")
+
+
+class IdeaSourcedMedia(Base, UUIDPrimaryKeyMixin, TimestampMixin):
+    """Images and captioned memes sourced for one ContentIdea, so a creator can
+    pull production-ready visuals for editing without leaving Kadro. See
+    docs/MEDIA_SOURCING.md. ``images``/``memes`` are lists of plain dicts
+    (ImageResult/MemeResult, dataclasses.asdict'd) rather than a normalized table,
+    since they're read-only display data, never queried by field."""
+
+    __tablename__ = "idea_sourced_media"
+
+    idea_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("content_ideas.id"), unique=True, nullable=False
+    )
+    images: Mapped[list[dict]] = mapped_column(JSON, default=list)
+    memes: Mapped[list[dict]] = mapped_column(JSON, default=list)
+
+    idea: Mapped[ContentIdea] = relationship(back_populates="sourced_media")
