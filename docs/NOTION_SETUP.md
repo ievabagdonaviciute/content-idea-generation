@@ -74,6 +74,7 @@ by name and only adding missing properties makes the whole sequence idempotent.
 | `My favorite part`     | Rich text     | Your note on the specific thing you liked              |
 | `Processing Error`     | Rich text     | Filled in by Kadro when processing fails               |
 | `Processed At`         | Date          | Filled in by Kadro when processing finishes            |
+| `Already Used`         | Checkbox      | Set by Kadro when you use the "Mark as used" action -- excludes this item from future idea-generation context. Independent of `Status`; never touched by sync. |
 
 Set a new row's `Status` to `New` when you add a link — that is the only manual step
 per item.
