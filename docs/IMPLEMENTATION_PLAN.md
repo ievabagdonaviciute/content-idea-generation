@@ -58,4 +58,28 @@ Matches the structure requested in the brief (`apps/api`, `apps/web`, `docs`,
 - [x] Phase 4
 - [x] Phase 5
 - [x] Phase 6
-- [x] Phase 7 (see final report in conversation for outstanding gaps)
+- [x] Phase 7
+
+Phase 4 fix: `run_own_post_analysis`/`run_inspiration_analysis` previously assumed
+the caller had eagerly loaded `source_video`/`content_analysis` on the passed-in
+entity; a plain `select()`-loaded entity (as opposed to one loaded through the
+repositories, which do eager-load) triggered `MissingGreenlet` on lazy-load.
+`normalize_metadata` and `_upsert_content_analysis` now query explicitly via the
+session instead of relying on relationship attributes being pre-loaded.
+
+Phase 5 addition: added `GET /ideas/{id}/brief` and `GET /ideas/{id}/script` so a
+previously generated brief/script can be re-fetched (the frontend idea detail page
+needs this to survive navigation/reload; only the `POST` generate endpoints existed
+before).
+
+Phase 6 was actually unbuilt until this pass (`apps/web` was 4 empty directories
+despite the checkbox above) -- it now has the full Next.js App Router dashboard:
+Dashboard, My Posts (list/detail/reanalyze), Inspiration (list/detail/sync/reanalyze),
+Profile (view/rebuild), Ideas (generate/list/detail/feedback/brief/script), a typed
+API client, and centralized strings.
+
+Phase 7 verification that has actually run: `pytest` (33 passed), `ruff check .`,
+`mypy app`, frontend `tsc --noEmit`, `eslint .`, and `next build` -- all clean. Manual
+smoke test: seeded formats, mock-synced 8 TikTok posts, analyzed all 8, built a
+profile, generated ideas, and generated a brief/script, all verified against the
+running API and reflected correctly in the UI's data contract.
