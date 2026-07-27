@@ -15,6 +15,7 @@ import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.factory import (
@@ -33,6 +34,7 @@ from app.models.inspiration import InspirationItem
 from app.models.media import MediaAsset
 from app.models.own_post import OwnPost
 from app.models.processing_job import ProcessingJob
+from app.models.source_video import SourceVideo
 from app.pipelines.media_processing import MediaProcessingError, extract_audio, sample_frames
 from app.schemas.content_analysis import ContentAnalysisSchema
 
@@ -52,9 +54,16 @@ class _SourceContext:
         return self.entity.id
 
 
-def normalize_metadata(entity: OwnPost | InspirationItem) -> _SourceContext:
+async def normalize_metadata(
+    session: AsyncSession, entity: OwnPost | InspirationItem
+) -> _SourceContext:
+    """Builds the context needed for analysis directly from the database rather
+    than relying on the caller having eagerly loaded ``entity``'s relationships
+    (lazy-loading a relationship from plain sync attribute access raises
+    ``MissingGreenlet`` under the async ORM)."""
     if isinstance(entity, OwnPost):
-        video = entity.source_video
+        video = await session.get(SourceVideo, entity.source_video_id)
+        assert video is not None
         return _SourceContext(
             entity_kind="own_post",
             entity=entity,
@@ -137,14 +146,26 @@ async def analyze_content(
     return await generate_validated_json(get_text_provider(), prompt, ContentAnalysisSchema)
 
 
-def _upsert_content_analysis(context: _SourceContext) -> ContentAnalysis:
-    existing = context.entity.content_analysis
+async def _upsert_content_analysis(
+    session: AsyncSession, context: _SourceContext
+) -> ContentAnalysis:
+    # Queried directly by owner FK rather than via ``context.entity.content_analysis``
+    # -- that relationship attribute may not be loaded on ``context.entity``
+    # (lazy-loading it from plain sync attribute access raises ``MissingGreenlet``
+    # under the async ORM), and this way behaves identically regardless of how the
+    # caller fetched the entity.
+    if isinstance(context.entity, OwnPost):
+        stmt = select(ContentAnalysis).where(ContentAnalysis.own_post_id == context.entity_id)
+    else:
+        stmt = select(ContentAnalysis).where(
+            ContentAnalysis.inspiration_item_id == context.entity_id
+        )
+    existing = (await session.execute(stmt)).scalar_one_or_none()
     if existing is not None:
         return existing
     # Assigning through the relationship (not just the FK column) keeps the
     # in-memory owning object's ``content_analysis`` attribute in sync via
-    # back_populates -- it was already eagerly loaded as None earlier in this
-    # session, and setting only the FK would leave that stale.
+    # back_populates.
     analysis = ContentAnalysis()
     if isinstance(context.entity, OwnPost):
         analysis.own_post = context.entity
@@ -162,7 +183,7 @@ async def store_structured_features(
     transcript_available: bool,
     embedding: list[float],
 ) -> ContentAnalysis:
-    analysis = _upsert_content_analysis(context)
+    analysis = await _upsert_content_analysis(session, context)
     analysis.primary_topic = data.primary_topic
     analysis.secondary_topics = data.secondary_topics
     analysis.content_format = data.content_format
@@ -249,10 +270,10 @@ async def _run_analysis(session: AsyncSession, context: _SourceContext) -> Conte
 
 
 async def run_own_post_analysis(session: AsyncSession, post: OwnPost) -> None:
-    context = normalize_metadata(post)
     post.processing_status = "processing"
     await session.flush()
     try:
+        context = await normalize_metadata(session, post)
         await _run_analysis(session, context)
         post.processing_status = "completed"
         post.processing_error = None
@@ -264,8 +285,8 @@ async def run_own_post_analysis(session: AsyncSession, post: OwnPost) -> None:
 
 
 async def run_inspiration_analysis(session: AsyncSession, item: InspirationItem) -> None:
-    context = normalize_metadata(item)
     try:
+        context = await normalize_metadata(session, item)
         await _run_analysis(session, context)
         item.error_message = None
     except Exception as exc:  # noqa: BLE001 -- persisted on the owning row
