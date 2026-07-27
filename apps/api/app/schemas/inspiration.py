@@ -25,6 +25,7 @@ class InspirationItemOut(BaseModel):
     embed_html: str | None
     processed_at: datetime | None
     error_message: str | None
+    already_used: bool
     created_at: datetime
 
 
