@@ -49,7 +49,9 @@ not a duplicate schema.
   profile (pillars, format distribution, hook patterns, gaps, confidence, sample
   size) so history is preserved rather than overwritten in place.
 - **ContentIdea** — a generated idea with all fields from the brief's idea JSON shape,
-  plus `status` (`proposed`/`saved`/`archived`) and `output_language`.
+  plus `status` (`proposed`/`saved`/`done`/`archived`, driven by the Todo page --
+  `saved` = added to Todo, `done` = filmed; marking an idea `done` also marks its
+  source `InspirationItem`(s) `already_used`) and `output_language`.
 - **IdeaSource** — join table linking a `ContentIdea` to the `OwnPost`/`InspirationItem`
   rows retrieved as context for it, with a `role` (`identity_reference`,
   `inspiration_reference`, `similarity_neighbor`).
