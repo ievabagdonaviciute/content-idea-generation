@@ -96,6 +96,19 @@ async def generate_brief_endpoint(
     return GeneratedBriefOut.model_validate(brief)
 
 
+@router.get("/{idea_id}/brief", response_model=GeneratedBriefOut)
+async def get_brief_endpoint(
+    idea_id: uuid.UUID, session: AsyncSession = Depends(get_session)
+) -> GeneratedBriefOut:
+    repo = IdeaRepository(session)
+    idea = await repo.get_by_id(idea_id)
+    if idea is None:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    if idea.brief is None:
+        raise HTTPException(status_code=404, detail="No brief generated yet for this idea")
+    return GeneratedBriefOut.model_validate(idea.brief)
+
+
 @router.post("/{idea_id}/script", response_model=GeneratedScriptOut)
 async def generate_script_endpoint(
     idea_id: uuid.UUID, body: ScriptGenerateRequest, session: AsyncSession = Depends(get_session)
@@ -110,3 +123,16 @@ async def generate_script_endpoint(
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     await session.commit()
     return GeneratedScriptOut.model_validate(script)
+
+
+@router.get("/{idea_id}/script", response_model=GeneratedScriptOut)
+async def get_script_endpoint(
+    idea_id: uuid.UUID, session: AsyncSession = Depends(get_session)
+) -> GeneratedScriptOut:
+    repo = IdeaRepository(session)
+    idea = await repo.get_by_id(idea_id)
+    if idea is None:
+        raise HTTPException(status_code=404, detail="Idea not found")
+    if idea.script is None:
+        raise HTTPException(status_code=404, detail="No script generated yet for this idea")
+    return GeneratedScriptOut.model_validate(idea.script)
