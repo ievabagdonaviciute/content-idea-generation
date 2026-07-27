@@ -9,6 +9,7 @@ import type {
   GeneratedScriptOut,
   IdeaFeedbackRequest,
   IdeaGenerateRequest,
+  IdeaSourcedMediaOut,
   ScriptGenerateRequest,
 } from "@/types/ideas";
 
@@ -76,14 +77,18 @@ export const api = {
   reanalyzeInspirationItem: (id: string) =>
     request<InspirationItemOut>(`/inspiration/${id}/reanalyze`, { method: "POST" }),
   syncNotion: () => request<SyncRunOut>("/inspiration/sync-notion", { method: "POST" }),
+  markInspirationUsed: (id: string) =>
+    request<InspirationItemOut>(`/inspiration/${id}/mark-used`, { method: "POST" }),
+  unmarkInspirationUsed: (id: string) =>
+    request<InspirationItemOut>(`/inspiration/${id}/unmark-used`, { method: "POST" }),
 
   // Profile
   getProfile: () => request<ContentProfileSnapshotOut>("/profile"),
   rebuildProfile: () => request<ContentProfileSnapshotOut>("/profile/rebuild", { method: "POST" }),
 
   // Ideas
-  listIdeas: (limit = 50, offset = 0) =>
-    request<Page<ContentIdeaOut>>(`/ideas${query({ limit, offset })}`),
+  listIdeas: (limit = 50, offset = 0, status?: string) =>
+    request<Page<ContentIdeaOut>>(`/ideas${query({ limit, offset, status })}`),
   getIdea: (id: string) => request<ContentIdeaOut>(`/ideas/${id}`),
   generateIdeas: (body: IdeaGenerateRequest) =>
     request<ContentIdeaOut[]>("/ideas/generate", {
@@ -104,4 +109,12 @@ export const api = {
       body: JSON.stringify(body),
     }),
   getScript: (id: string) => request<GeneratedScriptOut>(`/ideas/${id}/script`),
+  generateIdeaMedia: (id: string) =>
+    request<IdeaSourcedMediaOut>(`/ideas/${id}/media`, { method: "POST" }),
+  getIdeaMedia: (id: string) => request<IdeaSourcedMediaOut>(`/ideas/${id}/media`),
+  setIdeaStatus: (id: string, status: string) =>
+    request<ContentIdeaOut>(`/ideas/${id}/status`, {
+      method: "POST",
+      body: JSON.stringify({ status }),
+    }),
 };
