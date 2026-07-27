@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import JSON, String
+from sqlalchemy import JSON, Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
@@ -48,6 +48,12 @@ class InspirationItem(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     processed_at: Mapped[datetime | None] = mapped_column(nullable=True)
     error_message: Mapped[str | None] = mapped_column(String(2048), nullable=True)
     sync_run_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
+    # Set by the user via the "Mark as used" action once they've actually made a
+    # video from this inspiration -- excludes it from future idea-generation
+    # retrieval context (see app/services/idea_generation.py) without deleting it
+    # or touching notion_status, which is reserved for sync-pipeline state.
+    already_used: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     content_analysis: Mapped[ContentAnalysis | None] = relationship(
         back_populates="inspiration_item", uselist=False, cascade="all, delete-orphan"
