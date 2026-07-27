@@ -9,6 +9,7 @@ from app.api.deps import get_session
 from app.repositories.inspiration_repository import InspirationRepository
 from app.schemas.common import Page
 from app.schemas.inspiration import InspirationItemOut, SyncRunOut
+from app.services.inspiration_usage import set_inspiration_used
 from app.services.notion_sync import NotionSyncService
 
 router = APIRouter(prefix="/inspiration", tags=["inspiration"])
@@ -59,3 +60,29 @@ async def reanalyze_inspiration_item(
     await run_inspiration_analysis(session, item)
     await session.commit()
     return InspirationItemOut.model_validate(item)
+
+
+async def _set_already_used(
+    session: AsyncSession, item_id: uuid.UUID, value: bool
+) -> InspirationItemOut:
+    repo = InspirationRepository(session)
+    item = await repo.get_by_id(item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Inspiration item not found")
+    await set_inspiration_used(item, value)
+    await session.commit()
+    return InspirationItemOut.model_validate(item)
+
+
+@router.post("/{item_id}/mark-used", response_model=InspirationItemOut)
+async def mark_inspiration_item_used(
+    item_id: uuid.UUID, session: AsyncSession = Depends(get_session)
+) -> InspirationItemOut:
+    return await _set_already_used(session, item_id, True)
+
+
+@router.post("/{item_id}/unmark-used", response_model=InspirationItemOut)
+async def unmark_inspiration_item_used(
+    item_id: uuid.UUID, session: AsyncSession = Depends(get_session)
+) -> InspirationItemOut:
+    return await _set_already_used(session, item_id, False)
