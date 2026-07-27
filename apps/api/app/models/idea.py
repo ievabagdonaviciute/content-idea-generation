@@ -9,7 +9,7 @@ from app.core.config import get_settings
 from app.db.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
 from app.db.types import Vector
 
-IDEA_STATUSES = ("proposed", "saved", "archived")
+IDEA_STATUSES = ("proposed", "saved", "done", "archived")
 NOVELTY_LEVELS = ("aligned", "stretch", "experimental")
 SIMILARITY_CATEGORIES = ("new", "related_but_distinct", "follow_up", "too_similar")
 IDEA_SOURCE_ROLES = ("identity_reference", "inspiration_reference", "similarity_neighbor")
