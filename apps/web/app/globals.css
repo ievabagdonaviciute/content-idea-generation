@@ -3,10 +3,16 @@
 @tailwind utilities;
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  background-color: #0b0e14;
-  color: #e2e8f0;
+  color: #27182c;
+  background-color: #fdf2fb;
+  background-image:
+    radial-gradient(circle at 10% 0%, rgba(236, 72, 153, 0.16), transparent 45%),
+    radial-gradient(circle at 90% 10%, rgba(168, 85, 247, 0.16), transparent 45%),
+    radial-gradient(circle at 50% 100%, rgba(217, 70, 239, 0.12), transparent 55%);
+  background-attachment: fixed;
+  min-height: 100vh;
 }
