@@ -9,6 +9,7 @@ This talks to a real HTTP API and is therefore never exercised in the test suite
 from __future__ import annotations
 
 import base64
+import json
 from pathlib import Path
 
 import httpx
@@ -33,11 +34,24 @@ class OpenAICompatibleProvider:
             await self._client.aclose()
 
     async def generate_json(self, prompt: str, schema: type[BaseModel]) -> str:
+        # response_format: json_object only guarantees syntactically valid JSON, not
+        # any particular shape -- the model never sees field names/types/enums unless
+        # they're spelled out here, so without this it reliably guesses a plausible
+        # but schema-mismatched shape (e.g. a flat string instead of a nested object).
+        schema_instructions = (
+            "Respond with a single JSON object that validates against exactly this "
+            "JSON Schema. Use only these field names and types; respect every enum "
+            "and numeric range. No extra commentary, no markdown fences.\n\n"
+            f"{json.dumps(schema.model_json_schema())}"
+        )
         response = await self._client.post(
             "/chat/completions",
             json={
                 "model": self._settings.ai_text_model,
-                "messages": [{"role": "user", "content": prompt}],
+                "messages": [
+                    {"role": "system", "content": schema_instructions},
+                    {"role": "user", "content": prompt},
+                ],
                 "response_format": {"type": "json_object"},
             },
         )
