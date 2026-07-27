@@ -20,6 +20,7 @@ PROP_WHY_SAVED = "Why I saved it"
 PROP_FAVORITE_PART = "My favorite part"
 PROP_PROCESSING_ERROR = "Processing Error"
 PROP_PROCESSED_AT = "Processed At"
+PROP_ALREADY_USED = "Already Used"
 
 STATUS_OPTIONS = ["New", "Processing", "Processed", "Failed"]
 
@@ -57,6 +58,7 @@ def required_database_properties() -> dict[str, dict[str, Any]]:
         PROP_FAVORITE_PART: {"rich_text": {}},
         PROP_PROCESSING_ERROR: {"rich_text": {}},
         PROP_PROCESSED_AT: {"date": {}},
+        PROP_ALREADY_USED: {"checkbox": {}},
     }
 
 
