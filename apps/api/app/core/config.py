@@ -68,7 +68,15 @@ class Settings(BaseSettings):
     max_media_size_mb: int = Field(default=200, alias="MAX_MEDIA_SIZE_MB")
     media_storage_path: str = Field(default="./data/media", alias="MEDIA_STORAGE_PATH")
 
-    http_timeout_seconds: float = Field(default=15.0, alias="HTTP_TIMEOUT_SECONDS")
+    # Stock photo search for "source images/memes" on an idea. See
+    # docs/MEDIA_SOURCING.md. Falls back to a deterministic fake provider when unset.
+    pexels_api_key: str | None = Field(default=None, alias="PEXELS_API_KEY")
+    # Imgflip's captioning API is authenticated with real account credentials, not
+    # a separate API key -- see docs/MEDIA_SOURCING.md.
+    imgflip_username: str | None = Field(default=None, alias="IMGFLIP_USERNAME")
+    imgflip_password: str | None = Field(default=None, alias="IMGFLIP_PASSWORD")
+
+    http_timeout_seconds: float = Field(default=30.0, alias="HTTP_TIMEOUT_SECONDS")
     allowed_inspiration_hosts: tuple[str, ...] = (
         "tiktok.com",
         "www.tiktok.com",
@@ -126,6 +134,16 @@ class Settings(BaseSettings):
         return not (
             self.tiktok_client_key and self.tiktok_client_secret and self.tiktok_redirect_uri
         )
+
+    @property
+    def use_mock_images(self) -> bool:
+        """True when no real Pexels key is configured."""
+        return not bool(self.pexels_api_key)
+
+    @property
+    def use_mock_memes(self) -> bool:
+        """True when Imgflip account credentials are not fully configured."""
+        return not (self.imgflip_username and self.imgflip_password)
 
 
 @lru_cache
