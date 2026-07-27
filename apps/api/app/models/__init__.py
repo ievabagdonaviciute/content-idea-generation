@@ -7,7 +7,14 @@ from app.models.content_format import ContentFormat
 from app.models.content_profile_snapshot import ContentProfileSnapshot
 from app.models.creator_profile import CreatorProfile
 from app.models.external_account import ExternalAccount
-from app.models.idea import ContentIdea, GeneratedBrief, GeneratedScript, IdeaFeedback, IdeaSource
+from app.models.idea import (
+    ContentIdea,
+    GeneratedBrief,
+    GeneratedScript,
+    IdeaFeedback,
+    IdeaSource,
+    IdeaSourcedMedia,
+)
 from app.models.inspiration import InspirationItem
 from app.models.media import MediaAsset
 from app.models.own_post import OwnPost
@@ -29,6 +36,7 @@ __all__ = [
     "GeneratedScript",
     "IdeaFeedback",
     "IdeaSource",
+    "IdeaSourcedMedia",
     "InspirationItem",
     "MediaAsset",
     "OwnPost",
