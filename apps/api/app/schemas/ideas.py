@@ -103,5 +103,9 @@ class IdeaFeedbackRequest(BaseModel):
     comment: str | None = None
 
 
+class IdeaStatusUpdateRequest(BaseModel):
+    status: str
+
+
 class ScriptGenerateRequest(BaseModel):
     mode: str
