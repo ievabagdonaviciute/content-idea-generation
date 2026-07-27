@@ -1,6 +1,6 @@
 export type NoveltyLevel = "aligned" | "stretch" | "experimental";
 export type SimilarityCategory = "new" | "related_but_distinct" | "follow_up" | "too_similar";
-export type IdeaStatus = "proposed" | "saved" | "archived";
+export type IdeaStatus = "proposed" | "saved" | "done" | "archived";
 export type ProductionEffort = "low" | "medium" | "high";
 export type FeedbackRating = "love" | "maybe" | "not_for_me" | "already_covered";
 
@@ -91,4 +91,24 @@ export interface IdeaFeedbackRequest {
 
 export interface ScriptGenerateRequest {
   mode: string;
+}
+
+export interface ImageResultOut {
+  url: string;
+  thumbnail_url: string;
+  source_url: string;
+  credit: string | null;
+}
+
+export interface MemeResultOut {
+  url: string;
+  template_name: string;
+  caption_lines: string[];
+}
+
+export interface IdeaSourcedMediaOut {
+  id: string;
+  idea_id: string;
+  images: ImageResultOut[];
+  memes: MemeResultOut[];
 }
