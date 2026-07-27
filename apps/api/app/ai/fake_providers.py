@@ -328,9 +328,40 @@ def _build_generated_script(prompt: str) -> str:
     return json.dumps(data)
 
 
+def _build_meme_captions(prompt: str) -> str:
+    import json
+
+    seed = _seed(prompt)
+    english = _is_english(prompt)
+    topic = _topic_text(_pick(seed, _LT_TOPICS, salt=40), english)
+    count_match = re.search(r"Generate exactly (\d+) distinct caption sets", prompt)
+    count = int(count_match.group(1)) if count_match else 5
+
+    if english:
+        pairs = [
+            ["When you finally understand {topic}", "vs. explaining it to someone else"],
+            ["Me pretending {topic} is simple", "{topic}, actually"],
+            ["Nobody:", "Me, thinking about {topic} at 2am"],
+        ]
+    else:
+        pairs = [
+            ["Kai pagaliau supranti {topic}", "prieš tai, kai bandai tai paaiškinti kitam"],
+            ["Aš, sakydamas, kad {topic} yra paprasta", "{topic}, iš tikrųjų"],
+            ["Niekas:", "Aš, 2 val. nakties mąstantis apie {topic}"],
+        ]
+    data = {
+        "captions": [
+            {"lines": [line.format(topic=topic) for line in pairs[i % len(pairs)]]}
+            for i in range(count)
+        ]
+    }
+    return json.dumps(data)
+
+
 _BUILDERS = {
     "ContentAnalysisSchema": _build_content_analysis,
     "ContentIdeaSchema": _build_content_idea,
     "GeneratedBriefSchema": _build_generated_brief,
     "GeneratedScriptSchema": _build_generated_script,
+    "MemeCaptionsSchema": _build_meme_captions,
 }
