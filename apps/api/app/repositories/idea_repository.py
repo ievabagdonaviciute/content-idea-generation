@@ -19,6 +19,7 @@ class IdeaRepository:
             selectinload(ContentIdea.feedback_entries),
             selectinload(ContentIdea.brief),
             selectinload(ContentIdea.script),
+            selectinload(ContentIdea.sourced_media),
         )
 
     async def get_by_id(self, idea_id: uuid.UUID) -> ContentIdea | None:
@@ -27,13 +28,13 @@ class IdeaRepository:
         )
         return result.scalar_one_or_none()
 
-    async def list_all(self, *, limit: int = 50, offset: int = 0) -> list[ContentIdea]:
-        result = await self._session.execute(
-            self._with_relations()
-            .order_by(ContentIdea.created_at.desc())
-            .limit(limit)
-            .offset(offset)
-        )
+    async def list_all(
+        self, *, limit: int = 50, offset: int = 0, status: str | None = None
+    ) -> list[ContentIdea]:
+        stmt = self._with_relations().order_by(ContentIdea.created_at.desc())
+        if status is not None:
+            stmt = stmt.where(ContentIdea.status == status)
+        result = await self._session.execute(stmt.limit(limit).offset(offset))
         return list(result.scalars().all())
 
     def add(self, idea: ContentIdea) -> None:
