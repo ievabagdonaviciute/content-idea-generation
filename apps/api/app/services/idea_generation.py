@@ -96,9 +96,15 @@ def _summarize_feedback(entries: list[IdeaFeedback]) -> str:
 
 
 async def _fetch_recent_inspiration(session: AsyncSession, *, limit: int) -> list[InspirationItem]:
+    # already_used excludes inspiration the creator has confirmed they already
+    # made a video from -- see InspirationItem.already_used and the
+    # /inspiration/{id}/mark-used endpoint.
     result = await session.execute(
         select(InspirationItem)
-        .where(InspirationItem.notion_status == "Processed")
+        .where(
+            InspirationItem.notion_status == "Processed",
+            InspirationItem.already_used.is_(False),
+        )
         .options(selectinload(InspirationItem.content_analysis))
         .order_by(InspirationItem.created_at.desc())
         .limit(limit)
