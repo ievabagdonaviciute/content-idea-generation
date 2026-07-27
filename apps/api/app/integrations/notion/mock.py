@@ -49,6 +49,7 @@ class MockNotionClient:
         error_message: str | None = None,
         topics: list[str] | None = None,
         format_hint: str | None = None,
+        already_used: bool | None = None,
     ) -> None:
         item = self._items[page_id]
         item["status"] = status
@@ -60,6 +61,8 @@ class MockNotionClient:
             item["topics"] = topics
         if format_hint:
             item["format_hint"] = format_hint
+        if already_used is not None:
+            item["already_used"] = already_used
 
     @staticmethod
     def _to_row(item: dict) -> NotionRow:
