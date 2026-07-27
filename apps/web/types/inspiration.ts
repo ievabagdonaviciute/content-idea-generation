@@ -18,6 +18,7 @@ export interface InspirationItemOut {
   embed_html: string | null;
   processed_at: string | null;
   error_message: string | null;
+  already_used: boolean;
   created_at: string;
 }
 
