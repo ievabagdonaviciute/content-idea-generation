@@ -67,6 +67,28 @@ class GeneratedScriptOut(BaseModel):
     output_language: str
 
 
+class ImageResultOut(BaseModel):
+    url: str
+    thumbnail_url: str
+    source_url: str
+    credit: str | None = None
+
+
+class MemeResultOut(BaseModel):
+    url: str
+    template_name: str
+    caption_lines: list[str]
+
+
+class IdeaSourcedMediaOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    idea_id: uuid.UUID
+    images: list[ImageResultOut]
+    memes: list[MemeResultOut]
+
+
 class IdeaGenerateRequest(BaseModel):
     count: int = Field(default=3, ge=1, le=10)
     content_pillar: str | None = None
