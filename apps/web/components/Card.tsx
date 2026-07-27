@@ -2,7 +2,9 @@ import Link from "next/link";
 
 export function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`rounded-lg border border-slate-800 bg-slate-900/60 p-4 ${className}`}>
+    <div
+      className={`rounded-xl border border-fuchsia-100 bg-white/80 p-4 shadow-sm shadow-fuchsia-100/50 backdrop-blur ${className}`}
+    >
       {children}
     </div>
   );
@@ -20,7 +22,7 @@ export function LinkCard({
   return (
     <Link
       href={href}
-      className={`block rounded-lg border border-slate-800 bg-slate-900/60 p-4 transition-colors hover:border-brand-600/60 hover:bg-slate-900 ${className}`}
+      className={`block rounded-xl border border-fuchsia-100 bg-white/80 p-4 shadow-sm shadow-fuchsia-100/50 backdrop-blur transition-colors hover:border-purple-300 hover:bg-white ${className}`}
     >
       {children}
     </Link>
