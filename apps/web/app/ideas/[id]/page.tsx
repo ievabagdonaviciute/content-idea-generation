@@ -318,18 +318,21 @@ export default function IdeaDetailPage() {
       <Card className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-medium text-gray-700">{strings.ideas.sourceMedia}</h2>
-          <button
-            onClick={() => generateMedia.mutate()}
-            disabled={generateMedia.isPending}
-            className="rounded-md border border-purple-200 px-3 py-1.5 text-sm text-purple-700 hover:bg-purple-50 disabled:opacity-50"
-          >
-            {generateMedia.isPending
-              ? strings.ideas.sourcingMedia
-              : media
-                ? strings.ideas.regenerateMedia
-                : strings.ideas.sourceMedia}
-          </button>
+          {brief ? (
+            <button
+              onClick={() => generateMedia.mutate()}
+              disabled={generateMedia.isPending}
+              className="rounded-md border border-purple-200 px-3 py-1.5 text-sm text-purple-700 hover:bg-purple-50 disabled:opacity-50"
+            >
+              {generateMedia.isPending
+                ? strings.ideas.sourcingMedia
+                : media
+                  ? strings.ideas.regenerateMedia
+                  : strings.ideas.sourceMedia}
+            </button>
+          ) : null}
         </div>
+        {!brief ? <p className="text-sm text-gray-400">{strings.ideas.sourceMediaNeedsBrief}</p> : null}
         {generateMedia.isError ? <ErrorView error={generateMedia.error} /> : null}
         {!media && mediaQuery.isLoading && !mediaMissing ? <LoadingView /> : null}
         {media ? (
@@ -338,7 +341,7 @@ export default function IdeaDetailPage() {
               <p className="mb-2 text-xs uppercase tracking-wide text-gray-400">
                 {strings.ideas.images}
               </p>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {media.images.map((img, i) => (
                   <a
                     key={i}
@@ -346,10 +349,12 @@ export default function IdeaDetailPage() {
                     target="_blank"
                     rel="noreferrer"
                     className="block overflow-hidden rounded-md border border-fuchsia-100"
-                    title={img.credit ?? undefined}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={img.thumbnail_url} alt="" className="h-24 w-full object-cover" />
+                    <img src={img.thumbnail_url} alt="" className="h-32 w-full object-cover" />
+                    <p className="line-clamp-2 bg-white/80 px-2 py-1 text-xs text-gray-600">
+                      {strings.ideas.placement}: {img.placement}
+                    </p>
                   </a>
                 ))}
               </div>
@@ -358,7 +363,7 @@ export default function IdeaDetailPage() {
               <p className="mb-2 text-xs uppercase tracking-wide text-gray-400">
                 {strings.ideas.memes}
               </p>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {media.memes.map((meme, i) => (
                   <a
                     key={i}
@@ -366,10 +371,13 @@ export default function IdeaDetailPage() {
                     target="_blank"
                     rel="noreferrer"
                     className="block overflow-hidden rounded-md border border-fuchsia-100"
-                    title={meme.caption_lines.join(" / ")}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={meme.url} alt={meme.template_name} className="h-24 w-full object-cover" />
+                    <img src={meme.url} alt={meme.template_name} className="h-32 w-full object-cover" />
+                    <p className="px-2 pt-1 text-xs text-gray-500">{meme.caption_lines.join(" / ")}</p>
+                    <p className="line-clamp-2 bg-white/80 px-2 py-1 text-xs text-gray-600">
+                      {strings.ideas.placement}: {meme.placement}
+                    </p>
                   </a>
                 ))}
               </div>
