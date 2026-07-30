@@ -1,8 +1,28 @@
 # Media sourcing — images and memes for an idea
 
 On an idea's detail page, "Source images" pulls 5 real stock photos and 5 real,
-captioned memes relevant to that idea, for use while editing the video. This uses
-two official, licensed APIs -- never scraping, never bypassing access controls.
+captioned memes for use while editing the video. This uses two official,
+licensed APIs -- never scraping, never bypassing access controls.
+
+**Requires a brief.** The button only appears once a brief has been generated
+for the idea -- images/memes are planned *against that brief*, not the raw
+idea, so each one has a specific place to go while editing (e.g. a beat that
+says "superintelligence" gets a placement suggestion naming that exact beat,
+not a generic AI-themed photo). Calling `POST /ideas/{id}/media` before a
+brief exists returns 422 (`BriefRequiredError`), not a generic failure.
+
+## How placement works
+
+`app/services/idea_media.py` sends the AI text provider the full brief
+(objective, promise, every beat, hook choices, on-screen text, closing line,
+call to action) and asks for a placement *plan*
+(`app/schemas/media_placement.py`): for each image, a placement description
+(naming the specific beat/moment) plus a stock-photo search query; for each
+meme, a placement description plus 1-2 caption lines. Only after that plan
+exists does Kadro call Pexels/Imgflip -- one search per image placement, one
+captioned template per meme placement. Every returned item carries its
+`placement` string alongside the image/meme itself, and the idea detail page
+displays it under each thumbnail.
 
 ## Without any setup
 
@@ -44,15 +64,12 @@ Listing the top 100 popular templates (`get_memes`) needs no authentication;
 generating a captioned image (`caption_image`) does. The free tier works but adds a
 small watermark to captioned images unless you have Imgflip Pro.
 
-## How captions are chosen
+## How meme templates are chosen
 
 Kadro doesn't try to match a specific meme template's visual joke structure --
-`app/services/idea_media.py` picks Imgflip's most popular templates and asks the
-configured AI text provider (same `AI_API_KEY` used everywhere else, see
-`docs/AI_PIPELINE.md`) for generic, relatable setup/punchline caption pairs about
-the idea's topic, then applies each caption to a template via `caption_image`. This
-keeps caption writing centralized and reusable regardless of which templates are
-currently popular.
+it takes Imgflip's most popular templates in order and applies the AI-written
+caption for each placement via `caption_image`. Caption writing itself is
+described above (tied to the brief, not the template).
 
 ## Restart required
 
