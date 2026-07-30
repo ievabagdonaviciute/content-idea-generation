@@ -72,12 +72,14 @@ class ImageResultOut(BaseModel):
     thumbnail_url: str
     source_url: str
     credit: str | None = None
+    placement: str
 
 
 class MemeResultOut(BaseModel):
     url: str
     template_name: str
     caption_lines: list[str]
+    placement: str
 
 
 class IdeaSourcedMediaOut(BaseModel):
