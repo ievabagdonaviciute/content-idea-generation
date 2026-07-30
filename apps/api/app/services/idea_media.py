@@ -1,12 +1,15 @@
-"""Sources images and captioned memes for one ContentIdea, so a creator can pull
-production-ready visuals for editing without leaving Kadro. See
+"""Sources images and captioned memes for one ContentIdea, each tied to a
+specific placement in the idea's finalized brief -- so a creator can pull
+production-ready visuals for editing and know exactly where each one goes. See
 docs/MEDIA_SOURCING.md.
 
-Images come straight from the image search provider (Pexels, or a fake). Memes
-combine the meme provider's most-popular templates with AI-written captions
-relevant to the idea -- the caption generation follows the same
-generate-and-validate pattern as idea/brief/script generation
-(app/ai/json_generation.py).
+Requires a brief: without one there is nothing to place images against, so
+sourcing media before a brief exists is a user error (BriefRequiredError), not
+an AI/provider failure. The AI text provider first plans placements (one search
+query or caption per placement, each pointing at a specific beat/moment in the
+brief -- app/ai/prompts/media_placement_prompts.py), then each placement is
+resolved to a real image (Pexels, or a fake) or a real captioned meme (Imgflip,
+or a fake).
 """
 
 from __future__ import annotations
@@ -18,37 +21,66 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.factory import get_text_provider
 from app.ai.json_generation import generate_validated_json
-from app.ai.prompts.meme_prompts import MemeCaptionPromptContext, build_meme_caption_prompt
+from app.ai.prompts.media_placement_prompts import (
+    MediaPlacementPromptContext,
+    build_media_placement_prompt,
+)
 from app.integrations.media.factory import get_image_provider, get_meme_provider
 from app.models.idea import ContentIdea, IdeaSourcedMedia
-from app.schemas.meme import MemeCaptionsSchema
+from app.schemas.media_placement import MediaPlacementPlanSchema
 
 IMAGE_COUNT = 5
 MEME_COUNT = 5
 
 
+class BriefRequiredError(RuntimeError):
+    pass
+
+
 async def generate_idea_media(session: AsyncSession, idea: ContentIdea) -> IdeaSourcedMedia:
-    query = f"{idea.content_pillar} {idea.title}"
-    images = await get_image_provider().search(query, IMAGE_COUNT)
+    brief = idea.brief
+    if brief is None:
+        raise BriefRequiredError(
+            "Generate a brief for this idea before sourcing images/memes -- "
+            "each one is placed against a specific beat in the brief."
+        )
 
-    meme_provider = get_meme_provider()
-    templates = await meme_provider.list_templates(MEME_COUNT)
-
-    prompt = build_meme_caption_prompt(
-        MemeCaptionPromptContext(
+    prompt = build_media_placement_prompt(
+        MediaPlacementPromptContext(
             idea_title=idea.title,
             idea_concept=idea.concept,
-            hook_options=idea.hook_options,
-            count=len(templates),
+            brief_objective=brief.objective,
+            brief_promise=brief.promise,
+            beats=[f"{beat['label']}: {beat['description']}" for beat in brief.beats],
+            hook_choices=brief.hook_choices,
+            on_screen_text=brief.on_screen_text,
+            closing_line=brief.closing_line,
+            call_to_action=brief.call_to_action,
+            image_count=IMAGE_COUNT,
+            meme_count=MEME_COUNT,
             output_language=idea.output_language,
         )
     )
-    caption_data = await generate_validated_json(get_text_provider(), prompt, MemeCaptionsSchema)
+    plan = await generate_validated_json(get_text_provider(), prompt, MediaPlacementPlanSchema)
 
-    memes = [
-        await meme_provider.caption(template, caption.lines)
-        for template, caption in zip(templates, caption_data.captions, strict=False)
-    ]
+    image_provider = get_image_provider()
+    images: list[dict] = []
+    for image_placement in plan.image_placements:
+        results = await image_provider.search(image_placement.search_query, 1)
+        if not results:
+            continue
+        image_dict = asdict(results[0])
+        image_dict["placement"] = image_placement.placement
+        images.append(image_dict)
+
+    meme_provider = get_meme_provider()
+    templates = await meme_provider.list_templates(len(plan.meme_placements))
+    memes: list[dict] = []
+    for template, meme_placement in zip(templates, plan.meme_placements, strict=False):
+        meme = await meme_provider.caption(template, meme_placement.caption_lines)
+        meme_dict = asdict(meme)
+        meme_dict["placement"] = meme_placement.placement
+        memes.append(meme_dict)
 
     # Queried directly by idea_id rather than via ``idea.sourced_media`` -- that
     # relationship attribute may not be loaded on ``idea`` (lazy-loading it from
@@ -66,8 +98,8 @@ async def generate_idea_media(session: AsyncSession, idea: ContentIdea) -> IdeaS
         record = IdeaSourcedMedia()
         record.idea = idea
 
-    record.images = [asdict(img) for img in images]
-    record.memes = [asdict(meme) for meme in memes]
+    record.images = images
+    record.memes = memes
 
     session.add(record)
     await session.flush()
