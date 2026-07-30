@@ -328,32 +328,61 @@ def _build_generated_script(prompt: str) -> str:
     return json.dumps(data)
 
 
-def _build_meme_captions(prompt: str) -> str:
+def _build_media_placement_plan(prompt: str) -> str:
     import json
 
     seed = _seed(prompt)
     english = _is_english(prompt)
     topic = _topic_text(_pick(seed, _LT_TOPICS, salt=40), english)
-    count_match = re.search(r"Generate exactly (\d+) distinct caption sets", prompt)
-    count = int(count_match.group(1)) if count_match else 5
+
+    beats_match = re.search(r"Beats:\n(.*?)\n\n", prompt, re.DOTALL)
+    beat_labels = [line.split(":", 1)[0] for line in beats_match.group(1).splitlines()] if (
+        beats_match
+    ) else ["Hook", "Context", "Main point", "Close"]
+
+    image_count_match = re.search(r"Propose exactly (\d+) image placements", prompt)
+    image_count = int(image_count_match.group(1)) if image_count_match else 5
+    meme_count_match = re.search(r"Propose exactly (\d+) meme placements", prompt)
+    meme_count = int(meme_count_match.group(1)) if meme_count_match else 5
 
     if english:
-        pairs = [
+        caption_pairs = [
             ["When you finally understand {topic}", "vs. explaining it to someone else"],
             ["Me pretending {topic} is simple", "{topic}, actually"],
             ["Nobody:", "Me, thinking about {topic} at 2am"],
         ]
     else:
-        pairs = [
+        caption_pairs = [
             ["Kai pagaliau supranti {topic}", "prieš tai, kai bandai tai paaiškinti kitam"],
             ["Aš, sakydamas, kad {topic} yra paprasta", "{topic}, iš tikrųjų"],
             ["Niekas:", "Aš, 2 val. nakties mąstantis apie {topic}"],
         ]
+
+    def _placement_for(i: int) -> str:
+        label = beat_labels[i % len(beat_labels)]
+        return (
+            f"During the '{label}' beat"
+            if english
+            else f"Ties '{label}' etapo"
+        )
+
     data = {
-        "captions": [
-            {"lines": [line.format(topic=topic) for line in pairs[i % len(pairs)]]}
-            for i in range(count)
-        ]
+        "image_placements": [
+            {
+                "placement": _placement_for(i),
+                "search_query": f"{topic} concept" if english else topic,
+            }
+            for i in range(image_count)
+        ],
+        "meme_placements": [
+            {
+                "placement": _placement_for(i),
+                "caption_lines": [
+                    line.format(topic=topic) for line in caption_pairs[i % len(caption_pairs)]
+                ],
+            }
+            for i in range(meme_count)
+        ],
     }
     return json.dumps(data)
 
@@ -363,5 +392,5 @@ _BUILDERS = {
     "ContentIdeaSchema": _build_content_idea,
     "GeneratedBriefSchema": _build_generated_brief,
     "GeneratedScriptSchema": _build_generated_script,
-    "MemeCaptionsSchema": _build_meme_captions,
+    "MediaPlacementPlanSchema": _build_media_placement_plan,
 }
