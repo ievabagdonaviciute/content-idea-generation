@@ -25,7 +25,7 @@ from app.schemas.ideas import (
 )
 from app.services.brief_generation import generate_brief
 from app.services.idea_generation import IdeaGenerationRequest, generate_ideas
-from app.services.idea_media import generate_idea_media
+from app.services.idea_media import BriefRequiredError, generate_idea_media
 from app.services.inspiration_usage import set_inspiration_used
 from app.services.script_generation import InvalidScriptModeError, generate_script
 
@@ -175,6 +175,8 @@ async def generate_idea_media_endpoint(
         raise HTTPException(status_code=404, detail="Idea not found")
     try:
         media = await generate_idea_media(session, idea)
+    except BriefRequiredError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
     except _AI_PROVIDER_ERRORS as exc:
         raise HTTPException(status_code=502, detail=f"Media sourcing failed: {exc}") from exc
     await session.commit()
