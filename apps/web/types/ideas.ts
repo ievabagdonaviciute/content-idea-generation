@@ -98,12 +98,14 @@ export interface ImageResultOut {
   thumbnail_url: string;
   source_url: string;
   credit: string | null;
+  placement: string;
 }
 
 export interface MemeResultOut {
   url: string;
   template_name: string;
   caption_lines: string[];
+  placement: string;
 }
 
 export interface IdeaSourcedMediaOut {
